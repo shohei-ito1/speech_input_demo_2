@@ -50,8 +50,8 @@
 <body>
     <h1>音声入力デモ</h1>
     <div id="text-output">ここに音声入力の結果が表示されます</div>
-    <button id="start-btn">スタート</button>
-    <button id="stop-btn" disabled>終了</button>
+    <button id="start-btn">会話開始</button>
+    <button id="stop-btn" disabled>会話停止</button>
 
     <script>
         const startBtn = document.getElementById('start-btn');
@@ -66,7 +66,7 @@
             recognition = new SpeechRecognition();
             recognition.lang = 'ja-JP'; // 日本語を指定
             recognition.interimResults = true; // 仮認識結果を許可
-            recognition.continuous = false; // 音声入力を1回ごとに終了
+            recognition.continuous = true; // 音声入力を継続
 
             recognition.onstart = () => {
                 textOutput.textContent = "音声入力中...";
@@ -87,6 +87,7 @@
             };
 
             recognition.onend = () => {
+                textOutput.textContent += " [音声入力停止]";
                 startBtn.disabled = false;
                 stopBtn.disabled = true;
             };
@@ -108,3 +109,4 @@
     </script>
 </body>
 </html>
+
