@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音声入力</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+        #text-output {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #fff;
+            width: 90%;
+            max-width: 500px;
+            min-height: 100px;
+            overflow-y: auto;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: #fff;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>音声入力デモ ver0.04</h1>
+    <div id="text-output">ここに音声入力の結果が表示されます</div>
+    <button id="start-btn">会話開始</button>
+    <button id="stop-btn" disabled>会話停止</button>
+
+    <script>
+        const startBtn = document.getElementById('start-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        const textOutput = document.getElementById('text-output');
+
+        let recognition;
+        let isListening = false;
+
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'ja-JP';
+            recognition.interimResults = false; // 暫定結果を無効化
+            recognition.continuous = true;
+
+            recognition.onstart = () => {
+                isListening = true;
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                textOutput.textContent = "音声入力中...";
+            };
+
+            recognition.onresult = (event) => {
+                let finalTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    }
+                }
+                textOutput.textContent += finalTranscript;
+            };
+
+            recognition.onerror = (event) => {
+                textOutput.textContent += `\nエラー: ${event.error}`;
+                if (isListening) {
+                    recognition.start(); // エラー後に再起動
+                }
+            };
+
+            recognition.onend = () => {
+                if (isListening) {
+                    recognition.start(); // 自動再起動
+                } else {
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                }
+            };
+
+        } else {
+            alert("お使いのブラウザは音声認識に対応していません。最新のGoogle ChromeやSafariをご利用ください。");
+            startBtn.disabled = true;
+        }
+
+        startBtn.addEventListener('click', () => {
+            isListening = true;
+            textOutput.textContent = "ここに音声入力の結果が表示されます";
+            recognition.start();
+        });
+
+        stopBtn.addEventListener('click', () => {
+            isListening = false;
+            recognition.stop();
+        });
+    </script>
+</body>
+</html>
+
