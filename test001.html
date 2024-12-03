@@ -28,7 +28,6 @@
             overflow-y: auto;
         }
         button {
-            font-size: 16px;
             padding: 10px 20px;
             margin: 10px;
             border: none;
@@ -59,15 +58,15 @@
         const textOutput = document.getElementById('text-output');
 
         let recognition;
-        let completeText = ""; // ユーザーの入力を保持する変数
+        let completeText = "";
 
         // ブラウザ互換性チェック
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
-            recognition.lang = 'ja-JP'; // 日本語を指定
-            recognition.interimResults = true; // 仮認識結果を許可
-            recognition.continuous = true; // 音声入力を継続
+            recognition.lang = 'ja-JP';
+            recognition.interimResults = true;
+            recognition.continuous = true;
 
             recognition.onstart = () => {
                 startBtn.disabled = true;
@@ -79,12 +78,12 @@
                 for (let i = event.resultIndex; i < event.results.length; i++) {
                     const transcript = event.results[i][0].transcript;
                     if (event.results[i].isFinal) {
-                        completeText += transcript; // 完全な結果を保持
+                        completeText += transcript;
                     } else {
-                        interimTranscript += transcript; // 仮の結果を保持
+                        interimTranscript += transcript;
                     }
                 }
-                textOutput.textContent = completeText + interimTranscript; // 保持した内容と仮の結果を画面に表示
+                textOutput.textContent = completeText + interimTranscript;
             };
 
             recognition.onerror = (event) => {
@@ -103,12 +102,11 @@
 
         // スタートボタンの処理
         startBtn.addEventListener('click', () => {
-            completeText = ""; // 入力内容をリセット
-            textOutput.textContent = "ここに音声入力の結果が表示されます"; // 画面を初期化
+            completeText = "";
+            textOutput.textContent = "ここに音声入力の結果が表示されます";
             recognition.start();
         });
 
-        // 終了ボタンの処理
         stopBtn.addEventListener('click', () => {
             recognition.stop();
         });
