@@ -59,6 +59,7 @@
         const textOutput = document.getElementById('text-output');
 
         let recognition;
+        let completeText = ""; // ユーザーの入力を保持する変数
 
         // ブラウザ互換性チェック
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -69,25 +70,28 @@
             recognition.continuous = true; // 音声入力を継続
 
             recognition.onstart = () => {
-                textOutput.textContent = "音声入力中...";
                 startBtn.disabled = true;
                 stopBtn.disabled = false;
             };
 
             recognition.onresult = (event) => {
-                let transcript = '';
+                let interimTranscript = '';
                 for (let i = event.resultIndex; i < event.results.length; i++) {
-                    transcript += event.results[i][0].transcript;
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        completeText += transcript; // 完全な結果を保持
+                    } else {
+                        interimTranscript += transcript; // 仮の結果を保持
+                    }
                 }
-                textOutput.textContent = transcript;
+                textOutput.textContent = completeText + interimTranscript; // 保持した内容と仮の結果を画面に表示
             };
 
             recognition.onerror = (event) => {
-                textOutput.textContent = `エラー: ${event.error}`;
+                textOutput.textContent += `\nエラー: ${event.error}`;
             };
 
             recognition.onend = () => {
-                textOutput.textContent += " [音声入力停止]";
                 startBtn.disabled = false;
                 stopBtn.disabled = true;
             };
@@ -99,6 +103,8 @@
 
         // スタートボタンの処理
         startBtn.addEventListener('click', () => {
+            completeText = ""; // 入力内容をリセット
+            textOutput.textContent = "ここに音声入力の結果が表示されます"; // 画面を初期化
             recognition.start();
         });
 
