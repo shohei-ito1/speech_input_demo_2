@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>音声入力</title>
+    <title>音声入力 ver0.01</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -60,7 +60,6 @@
         let recognition;
         let completeText = "";
 
-        // ブラウザ互換性チェック
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
@@ -100,7 +99,6 @@
             startBtn.disabled = true;
         }
 
-        // スタートボタンの処理
         startBtn.addEventListener('click', () => {
             completeText = "";
             textOutput.textContent = "ここに音声入力の結果が表示されます";
